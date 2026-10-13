@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Blog Hub</title>
+  <!-- Bootstrap 5 CDN for clean, responsive UI -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container">
+      <span class="navbar-brand mb-0 h1">CS-312 Express Blog Platform</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row g-4">
+      
+      <!-- Post Creation Form Sidebar -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Publish New Entry</h5>
+          </div>
+          <div class="card-body">
+            <form action="/create-post" method="POST">
+              <div class="mb-3">
+                <label class="form-label">Author Name</label>
+                <input type="text" name="authorName" class="form-control" required placeholder="e.g. Jane Doe">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Post Title</label>
+                <input type="text" name="postTitle" class="form-control" required placeholder="Enter title">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Topic Category</label>
+                <select name="postCategory" class="form-select">
+                  <% categories.forEach(cat => { %>
+                    <option value="<%= cat %>"><%= cat %></option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Content Body</label>
+                <textarea name="postContent" class="form-control" rows="4" required placeholder="Write your thoughts..."></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">Submit Post</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Feed Section -->
+      <div class="col-lg-8">
+        <!-- Category Filter -->
+        <div class="d-flex align-items-center mb-3 gap-2 flex-wrap">
+          <span class="fw-bold me-2">Filter Topics:</span>
+          <a href="/" class="btn btn-sm <%= currentFilter === 'ALL' ? 'btn-dark' : 'btn-outline-dark' %>">All</a>
+          <% categories.forEach(cat => { %>
+            <a href="/?cat=<%= cat %>" class="btn btn-sm <%= currentFilter === cat ? 'btn-dark' : 'btn-outline-dark' %>">
+              <%= cat %>
+            </a>
+          <% }); %>
+        </div>
+
+        <!-- Posts List -->
+        <% if (posts.length === 0) { %>
+          <div class="alert alert-secondary">No blog posts found for this selection.</div>
+        <% } else { %>
+          <% posts.forEach(item => { %>
+            <div class="card mb-3 shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h4 class="card-title h5 mb-0"><%= item.title %></h4>
+                  <span class="badge bg-secondary"><%= item.category %></span>
+                </div>
+                <h6 class="card-subtitle text-muted mb-3 fs-7">
+                  Written by <%= item.author %> &bull; <%= item.timestamp %>
+                </h6>
+                <p class="card-text"><%= item.content %></p>
+                
+                <div class="d-flex gap-2">
+                  <a href="/edit-post/<%= item.id %>" class="btn btn-sm btn-outline-primary">Edit</a>
+                  <form action="/delete-post/<%= item.id %>" method="POST" onsubmit="return confirm('Delete post?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
